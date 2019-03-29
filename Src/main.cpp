@@ -58,6 +58,7 @@ int main(void)
     std::cout << "y(999,  999) = " << y(999,  999) << "." << std::endl;
     std::cout << "y(999, 1000) = " << y(999, 1000) << "." << std::endl;
     std::cout << "y(999, 1001) = " << y(999, 1001) << "." << std::endl;
+    std::cout << "y(38, 114) = " << y(38, 114) << "." << std::endl;
 
     std::cout << "End of main." << std::endl;
 

@@ -8,4 +8,5 @@ data/
 Src/.vscode/
 Build/
 build/
+.vscode/
 

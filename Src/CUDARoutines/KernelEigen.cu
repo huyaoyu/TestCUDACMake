@@ -6,7 +6,7 @@
 #include "CUDARoutines/CUDACommon.hpp"
 
 // CUDA runtime
-#include <cuda_runtime.h>
+// #include <cuda_runtime.h>
 
 // // helper functions and utilities to work with CUDA
 // #include <helper_functions.h>
@@ -65,12 +65,14 @@ void exponent(int n, const CRReal* input, CRReal* output, int rows, int cols, in
         // Figure out the actual indices of the window.
         find_window_indices( r, c, rows, cols, half, rIdx, cIdx );
 
-        // Take out the window.
-        const Eigen::Matrix<CRReal, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>
-            win = m.block( rIdx[0], cIdx[0], rIdx[1] - rIdx[0] + 1, cIdx[1] - cIdx[0] + 1 );
+        // // Take out the window.
+        // const Eigen::Matrix<CRReal, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>
+        //     win = m.block( rIdx[0], cIdx[0], rIdx[1] - rIdx[0] + 1, cIdx[1] - cIdx[0] + 1 );
 
-        // Calculate the exponent and sum.
-        output[i] = win.array().exp().matrix().sum();
+        // // Calculate the exponent and sum.
+        // output[i] = win.array().exp().matrix().sum();
+
+        output[i] = m.block( rIdx[0], cIdx[0], rIdx[1] - rIdx[0] + 1, cIdx[1] - cIdx[0] + 1 ).array().exp().pow(2.0).matrix().sum();
     }
 }
 
@@ -99,12 +101,15 @@ int crExponent(const CRReal* input, int rows, int cols, int cStep, CRReal* outpu
     }
 
     // Run kernel on 1M elements on the GPU.
-    const int nBlocks = ( size/cStep + N_SP_PER_SMM - 1 ) / N_SP_PER_SMM;
+    // const int nBlocks = ( size/cStep + N_SP_PER_SMM - 1 ) / N_SP_PER_SMM;
+    const int nBlocks = 128;
     printf("Start exponent() with nBlocks = %d, threads per block = %d.\n", nBlocks, N_SP_PER_SMM);
-    exponent<<<nBlocks, N_SP_PER_SMM>>>(size, dmIn, dmOut, rows, cols, cStep, 7);
+    exponent<<<nBlocks, N_SP_PER_SMM>>>(size, dmIn, dmOut, rows, cols, cStep, 39);
 
     // Wait for the GPU.
     cudaDeviceSynchronize();
+
+    printf("CUDA error code = %d.\n",  cudaPeekAtLastError());
 
     // Copy the value back.
     for ( int i = 0; i < size; ++i )
