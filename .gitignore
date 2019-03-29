@@ -1,0 +1,11 @@
+*.pyc
+*.dat
+Debug/
+debug/
+Data/
+data/
+*.code-workspace
+Src/.vscode/
+Build/
+build/
+
